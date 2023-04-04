@@ -27,3 +27,4 @@ if __name__ == "__main__":
     datafrem = clean_data()
     print(datafrem.dtypes)
     print(datafrem.sexo.value_counts())
+    0
