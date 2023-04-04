@@ -4,28 +4,28 @@ from datetime import datetime
 
 def clean_data():
 
-    df = pd.read_csv("solicitudes_credito.csv", sep=";", index_col = 0)
-    df.dropna(axis=0,inplace=True)
-    df.drop_duplicates(inplace = True)
+    datafrem = pd.read_csv("solicitudes_credito.csv", sep=";", index_col = 0)
+    datafrem.dropna(axis=0,inplace=True)
+    datafrem.drop_duplicates(inplace = True)
 
     for columna in ['sexo', 'tipo_de_emprendimiento', 'idea_negocio', 'línea_credito', 'barrio']: #['sexo', 'tipo_de_emprendimiento', 'idea_negocio', 'barrio', 'línea_credito']:
-        df[columna] = df[columna].apply(lambda x: x.lower())
+        datafrem[columna] = datafrem[columna].apply(lambda x: x.lower())
 
     for character in ['_', '-']:
         for columna in ['sexo', 'tipo_de_emprendimiento', 'idea_negocio', 'línea_credito', 'barrio']:
-            df[columna] = df[columna].apply(lambda x: x.replace(character, ' '))
+            datafrem[columna] = datafrem[columna].apply(lambda x: x.replace(character, ' '))
 
-    df['monto_del_credito'] = df['monto_del_credito'].apply(lambda x: re.sub("\$[\s*]", "", x))
-    df['monto_del_credito'] = df['monto_del_credito'].apply(lambda x: re.sub(",", "", x))
-    df['monto_del_credito'] = df['monto_del_credito'].apply(lambda x: re.sub("\.00", "", x))
-    df['monto_del_credito'] = df['monto_del_credito'].apply(int)
+    datafrem['monto_del_credito'] = datafrem['monto_del_credito'].apply(lambda x: re.sub("\$[\s*]", "", x))
+    datafrem['monto_del_credito'] = datafrem['monto_del_credito'].apply(lambda x: re.sub(",", "", x))
+    datafrem['monto_del_credito'] = datafrem['monto_del_credito'].apply(lambda x: re.sub("\.00", "", x))
+    datafrem['monto_del_credito'] = datafrem['monto_del_credito'].apply(int)
     
-    df['comuna_ciudadano'] = df['comuna_ciudadano'].apply(float)
+    datafrem['comuna_ciudadano'] = datafrem['comuna_ciudadano'].apply(float)
 
-    df['fecha_de_beneficio'] = df['fecha_de_beneficio'].apply(lambda x: datetime.strptime(x, "%Y/%m/%d") if (len(re.findall("^\d+/", x)[0]) - 1) == 4 else datetime.strptime(x, "%d/%m/%Y"))
+    datafrem['fecha_de_beneficio'] = datafrem['fecha_de_beneficio'].apply(lambda x: datetime.strptime(x, "%Y/%m/%d") if (len(re.findall("^\d+/", x)[0]) - 1) == 4 else datetime.strptime(x, "%d/%m/%Y"))
 
-    df.dropna(axis=0,inplace=True)
+    datafrem.dropna(axis=0,inplace=True)
     # # Se eliminan los registros duplicados
-    df.drop_duplicates(inplace = True)
+    datafrem.drop_duplicates(inplace = True)
 
-    return df
+    return datafrem
