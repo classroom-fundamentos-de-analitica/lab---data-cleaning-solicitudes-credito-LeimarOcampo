@@ -6,7 +6,6 @@ def clean_data():
     datafrem = pd.read_csv("solicitudes_credito.csv", sep=";", index_col = 0)
 
     datafrem.dropna(axis=0, inplace=True)
-asd
     datafrem.monto_del_credito = datafrem.monto_del_credito.str.strip("$")
     datafrem.monto_del_credito = datafrem.monto_del_credito.str.replace(",","")
     datafrem.monto_del_credito = datafrem.monto_del_credito.astype(float)
