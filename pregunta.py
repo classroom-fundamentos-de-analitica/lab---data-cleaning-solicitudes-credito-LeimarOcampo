@@ -1,17 +1,31 @@
 import pandas as pd
+import re
+from datetime import datetime
+
 def clean_data():
 
-    datafrem = pd.read_csv("solicitudes_credito.csv", sep=";")
-    datafrem.dropna(axis = 0, inplace = True)
-    datafrem.drop_duplicates(inplace = True)
-    datafrem=datafrem.drop(['Unnamed: 0'], axis=1)
-    datafrem[["sexo", "tipo_de_emprendimiento","idea_negocio","barrio","línea_credito"]]=datafrem[["sexo", "tipo_de_emprendimiento","idea_negocio","barrio","línea_credito"]].apply(lambda x: x.astype(str).str.lower())
-    datafrem=datafrem.replace(to_replace="(_)|(-)",value=" ",regex=True)    
-    datafrem=datafrem.replace(to_replace="[,$]|(\.00$)",value="",regex=True)
-    datafrem.monto_del_credito = datafrem.monto_del_credito.astype("int")
-    datafrem.comuna_ciudadano = datafrem.comuna_ciudadano.astype("float")
-    datafrem.fecha_de_beneficio = pd.to_datetime(datafrem.fecha_de_beneficio,infer_datetime_format=True,errors='ignore',dayfirst=True)
-    datafrem.fecha_de_beneficio = datafrem.fecha_de_beneficio.dt.strftime("%Y/%m/%d")
-    datafrem.drop_duplicates(inplace = True)
+    df = pd.read_csv("solicitudes_credito.csv", sep=";", index_col = 0)
+    df.dropna(axis=0,inplace=True)
+    df.drop_duplicates(inplace = True)
 
-    return datafrem
+    for columna in ['sexo', 'tipo_de_emprendimiento', 'idea_negocio', 'línea_credito', 'barrio']: #['sexo', 'tipo_de_emprendimiento', 'idea_negocio', 'barrio', 'línea_credito']:
+        df[columna] = df[columna].apply(lambda x: x.lower())
+
+    for character in ['_', '-']:
+        for columna in ['sexo', 'tipo_de_emprendimiento', 'idea_negocio', 'línea_credito', 'barrio']:
+            df[columna] = df[columna].apply(lambda x: x.replace(character, ' '))
+
+    df['monto_del_credito'] = df['monto_del_credito'].apply(lambda x: re.sub("\$[\s*]", "", x))
+    df['monto_del_credito'] = df['monto_del_credito'].apply(lambda x: re.sub(",", "", x))
+    df['monto_del_credito'] = df['monto_del_credito'].apply(lambda x: re.sub("\.00", "", x))
+    df['monto_del_credito'] = df['monto_del_credito'].apply(int)
+    
+    df['comuna_ciudadano'] = df['comuna_ciudadano'].apply(float)
+
+    df['fecha_de_beneficio'] = df['fecha_de_beneficio'].apply(lambda x: datetime.strptime(x, "%Y/%m/%d") if (len(re.findall("^\d+/", x)[0]) - 1) == 4 else datetime.strptime(x, "%d/%m/%Y"))
+
+    df.dropna(axis=0,inplace=True)
+    # # Se eliminan los registros duplicados
+    df.drop_duplicates(inplace = True)
+
+    return df
