@@ -25,7 +25,6 @@ def clean_data():
     datafrem['fecha_de_beneficio'] = datafrem['fecha_de_beneficio'].apply(lambda x: datetime.strptime(x, "%Y/%m/%d") if (len(re.findall("^\d+/", x)[0]) - 1) == 4 else datetime.strptime(x, "%d/%m/%Y"))
 
     datafrem.dropna(axis=0,inplace=True)
-    # # Se eliminan los registros duplicados
     datafrem.drop_duplicates(inplace = True)
 
     return datafrem
